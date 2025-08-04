@@ -1,0 +1,12 @@
+{
+  "httpMethod": "POST",
+  "path": "/users/user123/payment-splitting",
+  "pathParameters": {
+    "userId": "user123"
+  },
+  "body": "{\"userId\":\"user123\",\"availableAmount\":800,\"strategy\":\"priority_first\",\"allowPartialPayments\":true}",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "queryStringParameters": null
+}

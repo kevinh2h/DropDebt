@@ -1,0 +1,12 @@
+{
+  "httpMethod": "POST",
+  "path": "/users/user123/prioritization",
+  "pathParameters": {
+    "userId": "user123"
+  },
+  "body": "{\"userId\":\"user123\",\"availableAmount\":1500,\"priorityFactors\":{\"dueDateWeight\":0.3,\"essentialWeight\":0.4,\"lateFeeWeight\":0.2,\"interestWeight\":0.1}}",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "queryStringParameters": null
+}

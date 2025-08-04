@@ -1,0 +1,15 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../../..",
+    "paths": {
+      "@shared/*": ["src/shared/*"],
+      "@functions/*": ["src/functions/*"],
+      "@constructs/*": ["lib/constructs/*"],
+      "@stacks/*": ["lib/stacks/*"]
+    }
+  },
+  "include": [
+    "./**/*"
+  ]
+}

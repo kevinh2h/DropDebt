@@ -21,8 +21,21 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["src/shared/*"],
+      "@functions/*": ["src/functions/*"],
+      "@constructs/*": ["lib/constructs/*"],
+      "@stacks/*": ["lib/stacks/*"]
+    }
   },
+  "include": [
+    "bin/**/*",
+    "lib/**/*",
+    "src/**/*",
+    "test/**/*"
+  ],
   "exclude": [
     "node_modules",
     "cdk.out",
