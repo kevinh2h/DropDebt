@@ -88,7 +88,7 @@ export class AuthStack extends cdk.Stack {
       authFlows: {
         userSrp: true,        // Secure Remote Password (recommended)
         userPassword: true,   // Allow direct password auth for testing
-        adminUserPassword: false,
+        adminUserPassword: true, // Enable admin auth for testing
         custom: false
       },
 

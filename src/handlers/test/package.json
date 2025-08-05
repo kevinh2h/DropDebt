@@ -1,0 +1,11 @@
+{
+  "name": "dropdebt-test-lambda",
+  "version": "1.0.0",
+  "description": "Test Lambda function for DropDebt patterns",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.859.0",
+    "@aws-sdk/lib-dynamodb": "^3.859.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.1.0"
+  }
+}

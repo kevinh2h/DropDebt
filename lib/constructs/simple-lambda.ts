@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
@@ -8,7 +9,7 @@ export interface SimpleLambdaProps {
   functionName: string;
   codePath: string;
   handler: string;
-  table?: dynamodb.Table;
+  table?: dynamodb.ITable;
   timeout?: cdk.Duration;
   memorySize?: number;
 }
@@ -33,7 +34,22 @@ export class SimpleLambda extends Construct {
     });
     
     if (props.table) {
-      props.table.grantReadWriteData(this.function);
+      // Use least-privilege access with proper resource scoping
+      // User data isolation enforced at application level due to GSI compatibility requirements
+      this.function.addToRolePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:PutItem', 
+          'dynamodb:UpdateItem',
+          'dynamodb:DeleteItem',
+          'dynamodb:Query'
+        ],
+        resources: [
+          props.table.tableArn,
+          `${props.table.tableArn}/index/*`
+        ]
+      }));
     }
   }
 }
