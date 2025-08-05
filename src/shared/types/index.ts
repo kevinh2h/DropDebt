@@ -4,6 +4,7 @@ export * from './bill';
 export * from './expense';
 export * from './payment';
 export * from './api';
+export * from './auth';
 
 // Common utility types
 export interface PaginationParams {
@@ -58,6 +59,8 @@ export enum ErrorCodes {
 
 export enum EntityTypes {
   USER = 'User',
+  AUTH_USER = 'AuthUser',
+  SESSION = 'Session',
   BILL = 'Bill',
   EXPENSE = 'Expense',
   PAYMENT_ARRANGEMENT = 'PaymentArrangement'

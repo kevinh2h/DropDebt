@@ -1,6 +1,8 @@
 // Export all utility functions and classes with explicit exports to avoid conflicts
 export * from './dynamodb';
 export * from './response';
+export * from './auth';
+export * from './cognito';
 
 // From validation.ts - rename ValidationError to avoid conflict with errors.ts
 export { 
