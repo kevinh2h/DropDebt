@@ -7,6 +7,7 @@ import { SimpleLambda } from './constructs/simple-lambda';
 import { DropDebtLambda, DropDebtFeature } from './constructs/dropdebt-lambda';
 import { BillsLambda } from './constructs/bills-lambda';
 import { ExpensesLambda } from './constructs/expenses-lambda';
+import { PaymentSplitsLambda } from './constructs/payment-splits-lambda';
 import { SecurityMonitoring } from './constructs/security-monitoring';
 
 export class DropdebtStack extends cdk.Stack {
@@ -65,6 +66,19 @@ export class DropdebtStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30)
     });
 
+    // Crisis Triage Lambda function - simple emergency guidance
+    const paymentSplitsLambda = new PaymentSplitsLambda(this, 'PaymentSplitsLambda', {
+      functionName: 'dropdebt-payment-splits-function',
+      codePath: 'src/handlers/payment-splits',
+      handler: 'index.handler',
+      table: table,
+      userPool: authStack.userPool,
+      billsLambdaArn: billsLambda.function.functionArn,
+      expensesLambdaArn: expensesLambda.function.functionArn,
+      memorySize: 256, // Standard memory for crisis triage
+      timeout: cdk.Duration.seconds(30)
+    });
+
     // Security monitoring for Lambda functions (temporarily disabled for deployment)
     // const securityMonitoring = new SecurityMonitoring(this, 'SecurityMonitoring', {
     //   lambdaFunctions: [sampleLambda.function, testLambda.function]
@@ -105,6 +119,11 @@ export class DropdebtStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'ExpensesLambdaFunction', {
       value: expensesLambda.function.functionName,
       description: 'DropDebt essential expenses Lambda function name'
+    });
+
+    new cdk.CfnOutput(this, 'PaymentSplitsLambdaFunction', {
+      value: paymentSplitsLambda.function.functionName,
+      description: 'DropDebt crisis triage Lambda function name'
     });
 
     // Auth outputs for easy access
