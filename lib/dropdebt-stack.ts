@@ -8,6 +8,7 @@ import { DropDebtLambda, DropDebtFeature } from './constructs/dropdebt-lambda';
 import { BillsLambda } from './constructs/bills-lambda';
 import { ExpensesLambda } from './constructs/expenses-lambda';
 import { PaymentSplitsLambda } from './constructs/payment-splits-lambda';
+import { DashboardLambda } from './constructs/dashboard-lambda';
 import { SecurityMonitoring } from './constructs/security-monitoring';
 
 export class DropdebtStack extends cdk.Stack {
@@ -79,6 +80,20 @@ export class DropdebtStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30)
     });
 
+    // Dashboard Lambda function - meaningful insights and actionable guidance
+    const dashboardLambda = new DashboardLambda(this, 'DashboardLambda', {
+      functionName: 'dropdebt-dashboard-function',
+      codePath: 'src/handlers/dashboard',
+      handler: 'index.handler',
+      table: table,
+      userPool: authStack.userPool,
+      billsLambdaArn: billsLambda.function.functionArn,
+      expensesLambdaArn: expensesLambda.function.functionArn,
+      triageLambdaArn: paymentSplitsLambda.function.functionArn,
+      memorySize: 256, // Standard memory for aggregation
+      timeout: cdk.Duration.seconds(10) // Fast response required
+    });
+
     // Security monitoring for Lambda functions (temporarily disabled for deployment)
     // const securityMonitoring = new SecurityMonitoring(this, 'SecurityMonitoring', {
     //   lambdaFunctions: [sampleLambda.function, testLambda.function]
@@ -93,9 +108,10 @@ export class DropdebtStack extends cdk.Stack {
         features: [
           'User Authentication',
           'Bill Prioritization',
-          'Payment Splitting', 
+          'Crisis Triage System', 
           'Essential Needs Protection',
-          'Budget Analysis'
+          'Budget Analysis',
+          'Real Insights Dashboard'
         ]
       }),
       description: 'DropDebt project information'
@@ -124,6 +140,11 @@ export class DropdebtStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'PaymentSplitsLambdaFunction', {
       value: paymentSplitsLambda.function.functionName,
       description: 'DropDebt crisis triage Lambda function name'
+    });
+
+    new cdk.CfnOutput(this, 'DashboardLambdaFunction', {
+      value: dashboardLambda.function.functionName,
+      description: 'DropDebt dashboard Lambda function name'
     });
 
     // Auth outputs for easy access

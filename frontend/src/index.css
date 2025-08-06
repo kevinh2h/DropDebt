@@ -1,0 +1,222 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles optimized for accessibility and stressed users */
+@layer base {
+  html {
+    /* Improve font rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* Disable automatic zoom on iOS when focusing inputs */
+    -webkit-text-size-adjust: 100%;
+    
+    /* Support for safe area insets on mobile */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  body {
+    /* System font stack for fast loading and familiarity */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 
+                 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    
+    /* Improve readability */
+    line-height: 1.6;
+    color: theme('colors.gray.900');
+    background-color: theme('colors.gray.50');
+    
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus {
+    outline: 2px solid theme('colors.stable.500');
+    outline-offset: 2px;
+  }
+
+  /* Crisis mode focus override */
+  .crisis-mode *:focus {
+    outline-color: theme('colors.crisis.500');
+  }
+
+  /* Improve button and input accessibility */
+  button, input, select, textarea {
+    font-family: inherit;
+  }
+
+  /* Ensure minimum touch targets on mobile */
+  button, a, input, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Component layer for reusable patterns */
+@layer components {
+  /* Status indicator styles */
+  .status-crisis {
+    @apply bg-crisis-50 text-crisis-700 border-crisis-200;
+  }
+  
+  .status-urgent {
+    @apply bg-urgent-50 text-urgent-700 border-urgent-200;
+  }
+  
+  .status-caution {
+    @apply bg-caution-50 text-caution-700 border-caution-200;
+  }
+  
+  .status-stable {
+    @apply bg-stable-50 text-stable-700 border-stable-200;
+  }
+  
+  .status-comfortable {
+    @apply bg-comfortable-50 text-comfortable-700 border-comfortable-200;
+  }
+
+  /* Button variants optimized for different user states */
+  .btn-crisis {
+    @apply bg-crisis-500 text-white px-6 py-3 rounded-lg font-medium 
+           hover:bg-crisis-600 focus:ring-4 focus:ring-red-200 
+           transition-all duration-200 touch-target;
+  }
+  
+  .btn-primary {
+    @apply bg-stable-500 text-white px-6 py-3 rounded-lg font-medium 
+           hover:bg-stable-600 focus:ring-4 focus:ring-green-200 
+           transition-all duration-200 touch-target;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-medium 
+           hover:bg-gray-200 focus:ring-4 focus:ring-gray-200 
+           transition-all duration-200 touch-target;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-lg shadow-card p-6 border border-gray-100;
+  }
+  
+  .card-crisis {
+    @apply bg-crisis-50 border-crisis-200 rounded-lg p-6;
+  }
+
+  /* Loading states */
+  .loading-skeleton {
+    @apply animate-gentle-pulse bg-gray-200 rounded;
+  }
+  
+  .loading-text {
+    @apply loading-skeleton h-4 w-3/4;
+  }
+  
+  .loading-button {
+    @apply loading-skeleton h-12 w-full;
+  }
+
+  /* Mobile-first responsive text */
+  .text-responsive {
+    @apply text-base md:text-lg;
+  }
+  
+  .heading-responsive {
+    @apply text-lg md:text-xl lg:text-2xl;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .card {
+      @apply border-2 border-gray-300;
+    }
+    
+    .btn-primary {
+      @apply border-2 border-stable-700;
+    }
+    
+    .btn-crisis {
+      @apply border-2 border-crisis-700;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Dark mode preparation (can be enabled later) */
+  @media (prefers-color-scheme: dark) {
+    /* Currently using light mode only for consistency */
+  }
+}
+
+/* Utility layer for one-off styles */
+@layer utilities {
+  /* Safe area utilities for mobile */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Text utilities for readability */
+  .text-readable {
+    max-width: 65ch;
+    line-height: 1.6;
+  }
+  
+  /* Crisis mode utilities */
+  .crisis-border {
+    border: 2px solid theme('colors.crisis.500');
+  }
+  
+  .crisis-shadow {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+  }
+  
+  /* Touch-friendly utilities */
+  .touch-none {
+    touch-action: none;
+  }
+  
+  .touch-pan-x {
+    touch-action: pan-x;
+  }
+  
+  .touch-pan-y {
+    touch-action: pan-y;
+  }
+
+  /* Screen reader utilities */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}
