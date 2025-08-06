@@ -1,0 +1,355 @@
+{
+	"info": {
+		"_postman_id": "dropdebt-api-testing",
+		"name": "DropDebt API Testing",
+		"description": "Complete API testing collection for DropDebt infrastructure\n\nAuthentication: JWT tokens from Cognito User Pool ca-central-1_kEvkxVbRv\nRegion: ca-central-1\nUpdated: 2025-08-05 (Post-Karen validation)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://lambda.ca-central-1.amazonaws.com/2015-03-31/functions",
+			"type": "string"
+		},
+		{
+			"key": "cognito_user_pool_id",
+			"value": "ca-central-1_kEvkxVbRv",
+			"type": "string"
+		},
+		{
+			"key": "cognito_client_id",
+			"value": "48kp3qirc4cvhrpr8ag66ibg3j",
+			"type": "string"
+		},
+		{
+			"key": "test_user_id",
+			"value": "acedb598-b051-70f1-f861-eab871a259ea",
+			"type": "string"
+		},
+		{
+			"key": "region",
+			"value": "ca-central-1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Get Cognito JWT Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-amz-json-1.1",
+								"type": "text"
+							},
+							{
+								"key": "X-Amz-Target",
+								"value": "AWSCognitoIdentityProviderService.AdminInitiateAuth",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"UserPoolId\": \"{{cognito_user_pool_id}}\",\n    \"ClientId\": \"{{cognito_client_id}}\",\n    \"AuthFlow\": \"ADMIN_NO_SRP_AUTH\",\n    \"AuthParameters\": {\n        \"USERNAME\": \"test-acedb598@dropdebt.ca\",\n        \"PASSWORD\": \"TempPassword123!\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://cognito-idp.{{region}}.amazonaws.com/",
+							"protocol": "https",
+							"host": [
+								"cognito-idp",
+								"{{region}}",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Get JWT access token from Cognito User Pool for API authentication.\n\nNote: You'll need to create a test user first or use existing credentials."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Lambda Functions",
+			"item": [
+				{
+					"name": "Test Lambda - Sample Profile Operation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text",
+								"description": "JWT token from Cognito authentication"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"operation\": \"profile\",\n    \"auth\": {\n        \"userId\": \"{{test_user_id}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/dropdebt-test-function/invocations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"dropdebt-test-function",
+								"invocations"
+							]
+						},
+						"description": "Test the main DropDebt Lambda function with profile operation.\n\nExpected Response: 200 with user profile data or 401 without valid JWT"
+					},
+					"response": []
+				},
+				{
+					"name": "Test Lambda - All Operations",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"operation\": \"all\",\n    \"auth\": {\n        \"userId\": \"{{test_user_id}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/dropdebt-test-function/invocations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"dropdebt-test-function",
+								"invocations"
+							]
+						},
+						"description": "Test comprehensive operations including profile and bill management.\n\nThis endpoint demonstrates:\n- User profile retrieval\n- Bill creation and querying\n- GSI1 priority-based queries"
+					},
+					"response": []
+				},
+				{
+					"name": "Test Lambda - Bill Operations",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"operation\": \"bills\",\n    \"auth\": {\n        \"userId\": \"{{test_user_id}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/dropdebt-test-function/invocations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"dropdebt-test-function",
+								"invocations"
+							]
+						},
+						"description": "Test bill operations including priority-based retrieval via GSI1."
+					},
+					"response": []
+				},
+				{
+					"name": "Test Lambda - No Auth (401 Test)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"operation\": \"profile\",\n    \"auth\": {\n        \"userId\": \"{{test_user_id}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/dropdebt-test-function/invocations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"dropdebt-test-function",
+								"invocations"
+							]
+						},
+						"description": "Test authentication requirement - should return 401 without Authorization header."
+					},
+					"response": []
+				},
+				{
+					"name": "Sample Lambda - DynamoDB Test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"test\": \"simple\",\n    \"timestamp\": \"{{$timestamp}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/dropdebt-sample-function/invocations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"dropdebt-sample-function",
+								"invocations"
+							]
+						},
+						"description": "Test the sample Lambda function that performs basic DynamoDB operations.\n\nThis function:\n- Creates a test item in DynamoDB\n- Retrieves the item back\n- Returns both the operation result and item data\n\nExpected Response: 200 with successful DynamoDB read/write confirmation"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Infrastructure Health",
+			"item": [
+				{
+					"name": "Lambda Function Info - Test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/dropdebt-test-function",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"dropdebt-test-function"
+							]
+						},
+						"description": "Get metadata about the test Lambda function including version, memory, timeout."
+					},
+					"response": []
+				},
+				{
+					"name": "Lambda Function Info - Sample",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/dropdebt-sample-function",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"dropdebt-sample-function"
+							]
+						},
+						"description": "Get metadata about the sample Lambda function."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-generate timestamp for requests",
+					"pm.globals.set('timestamp', Date.now());"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Basic response validation",
+					"pm.test('Response time is reasonable', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+					"});",
+					"",
+					"pm.test('Response has expected structure', function () {",
+					"    const responseJson = pm.response.json();",
+					"    pm.expect(responseJson).to.have.property('statusCode');",
+					"    pm.expect(responseJson).to.have.property('headers');",
+					"    pm.expect(responseJson).to.have.property('body');",
+					"});",
+					"",
+					"// Extract JWT token from Cognito responses",
+					"if (pm.response.json().AuthenticationResult) {",
+					"    pm.globals.set('jwt_token', pm.response.json().AuthenticationResult.AccessToken);",
+					"}"
+				]
+			}
+		}
+	]
+}
