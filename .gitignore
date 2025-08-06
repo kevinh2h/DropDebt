@@ -56,3 +56,13 @@ Thumbs.db
 # AWS
 .aws-sam/
 .cdk.staging
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!cdk.json
+!cdk.context.json
+!DropDebt-API.postman_collection.json
+!DropDebt-Environment.postman_environment.json
+lambda/
+lambda-layer/
