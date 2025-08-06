@@ -2,9 +2,11 @@
 export * from './user';
 export * from './bill';
 export * from './expense';
+export * from './expenses';
 export * from './payment';
 export * from './api';
 export * from './auth';
+export * from './bills';
 
 // Common utility types
 export interface PaginationParams {
@@ -63,7 +65,11 @@ export enum EntityTypes {
   SESSION = 'Session',
   BILL = 'Bill',
   EXPENSE = 'Expense',
-  PAYMENT_ARRANGEMENT = 'PaymentArrangement'
+  PAYMENT_ARRANGEMENT = 'PaymentArrangement',
+  ESSENTIAL_PROFILE = 'EssentialProfile',
+  ESSENTIAL_EXPENSE = 'EssentialExpense',
+  INCOME_SOURCE = 'IncomeSource',
+  BUDGET_CALCULATION = 'BudgetCalculation'
 }
 
 // Priority score ranges
