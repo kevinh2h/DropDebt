@@ -151,6 +151,33 @@
     }
   }
 
+  /* Priority Matrix specific styles */
+  .priority-card-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+  
+  .priority-badge-pulse {
+    animation: priority-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes priority-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  .bill-card-hover {
+    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  .action-button-group {
+    @apply grid grid-cols-3 gap-2;
+  }
+  
+  .filter-chip-active {
+    @apply ring-2 ring-stable-500 ring-opacity-50;
+  }
+
   /* Dark mode preparation (can be enabled later) */
   @media (prefers-color-scheme: dark) {
     /* Currently using light mode only for consistency */

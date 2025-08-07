@@ -8,6 +8,13 @@ import { ProgressSection } from './ProgressSection';
 import { CrisisAlert } from './CrisisAlert';
 import { DeadlinesList } from './DeadlinesList';
 import { LoadingState as LoadingComponent } from './LoadingState';
+import { PriorityMatrix } from './PriorityMatrix';
+import { SplitPaymentModal } from './SplitPaymentModal';
+import { PaymentConfirmationModal } from './PaymentConfirmationModal';
+import { PaymentProcessingModal } from './PaymentProcessingModal';
+import { NegotiationHelpModal } from './NegotiationHelpModal';
+import { BillsProvider } from '@/context/BillsContext';
+import type { Bill } from '@/types/bills';
 
 export function Dashboard() {
   // API and error handling
@@ -26,6 +33,50 @@ export function Dashboard() {
     isOffline: false,
     showAllDeadlines: false,
     refreshing: false
+  });
+
+  // Split payment modal state
+  const [splitPaymentModal, setSplitPaymentModal] = useState<{
+    isOpen: boolean;
+    bill: Bill | null;
+  }>({
+    isOpen: false,
+    bill: null
+  });
+
+  // Payment confirmation modal state
+  const [paymentConfirmationModal, setPaymentConfirmationModal] = useState<{
+    isOpen: boolean;
+    splitPlan: any;
+    billName: string;
+    creditorName: string;
+  }>({
+    isOpen: false,
+    splitPlan: null,
+    billName: '',
+    creditorName: ''
+  });
+
+  // Payment processing modal state
+  const [paymentProcessingModal, setPaymentProcessingModal] = useState<{
+    isOpen: boolean;
+    billNames: string;
+    amount?: number;
+  }>({
+    isOpen: false,
+    billNames: '',
+    amount: 0
+  });
+
+  // Negotiation help modal state
+  const [negotiationHelpModal, setNegotiationHelpModal] = useState<{
+    isOpen: boolean;
+    billId: string;
+    creditorName: string;
+  }>({
+    isOpen: false,
+    billId: '',
+    creditorName: ''
   });
 
   // Load dashboard data
@@ -130,6 +181,72 @@ export function Dashboard() {
     }
   };
 
+  // Handle bill actions from Priority Matrix
+  const handleBillAction = (action: string, billId: string | string[]) => {
+    const billIds = Array.isArray(billId) ? billId : [billId];
+    
+    switch (action) {
+      case 'pay':
+        // Show payment processing modal
+        const billNames = billIds.length === 1 ? `bill ${billIds[0]}` : `${billIds.length} bills`;
+        if (confirm(`Ready to pay ${billNames}? This will connect to your payment method.`)) {
+          setPaymentProcessingModal({
+            isOpen: true,
+            billNames,
+            amount: undefined // Could calculate total amount from billIds
+          });
+        }
+        break;
+        
+      case 'split':
+        // Show split payment calculator modal
+        // For now, create a mock bill object - in real app this would come from API
+        const mockBill: Bill = {
+          billId: billIds[0],
+          name: 'Electric Bill',
+          creditorName: 'Metro Electric',
+          amountOverdue: 320,
+          totalAmount: 320,
+          originalDueDate: '2025-07-25',
+          daysPastDue: 12,
+          billType: 'utility',
+          shutoffRisk: true,
+          shutoffDate: '2025-08-15',
+          repoRisk: false,
+          lateFeesAccruing: true,
+          lateFeeAmount: 25,
+          priorityScore: 95,
+          priorityLevel: 'urgent',
+          priorityReason: 'Utility shutoff imminent - essential service at risk',
+          status: 'active',
+          createdAt: '2025-07-20T10:00:00Z',
+          updatedAt: new Date().toISOString(),
+        };
+        
+        setSplitPaymentModal({
+          isOpen: true,
+          bill: mockBill
+        });
+        break;
+        
+      case 'negotiate':
+        // Show negotiation help modal
+        setNegotiationHelpModal({
+          isOpen: true,
+          billId: billIds[0],
+          creditorName: 'Metro Electric' // In real app, get from API
+        });
+        break;
+      case 'edit':
+        // Show bill editing interface
+        console.log('Editing bill:', billId);
+        // You could show a bill editing modal
+        break;
+      default:
+        console.log('Unknown bill action:', action);
+    }
+  };
+
   // Toggle crisis mode
   const toggleCrisisMode = () => {
     setUIState(prev => ({ ...prev, isCrisisMode: !prev.isCrisisMode }));
@@ -138,6 +255,71 @@ export function Dashboard() {
   // Toggle show all deadlines
   const toggleShowAllDeadlines = () => {
     setUIState(prev => ({ ...prev, showAllDeadlines: !prev.showAllDeadlines }));
+  };
+
+  // Split payment modal handlers
+  const handleCloseSplitPayment = () => {
+    setSplitPaymentModal({
+      isOpen: false,
+      bill: null
+    });
+  };
+
+  const handleConfirmSplitPayment = (splitPlan: any) => {
+    // Close the split payment modal
+    handleCloseSplitPayment();
+    
+    // Show the confirmation modal with payment details
+    setPaymentConfirmationModal({
+      isOpen: true,
+      splitPlan,
+      billName: splitPaymentModal.bill?.name || '',
+      creditorName: splitPaymentModal.bill?.creditorName || ''
+    });
+  };
+
+  // Handle closing payment confirmation modal
+  const handleClosePaymentConfirmation = () => {
+    setPaymentConfirmationModal({
+      isOpen: false,
+      splitPlan: null,
+      billName: '',
+      creditorName: ''
+    });
+    
+    // Refresh dashboard to show updated status
+    handleRefresh();
+  };
+
+  // Handle closing payment processing modal
+  const handleClosePaymentProcessing = () => {
+    setPaymentProcessingModal({
+      isOpen: false,
+      billNames: '',
+      amount: 0
+    });
+    
+    // Refresh dashboard to show updated status
+    handleRefresh();
+  };
+
+  // Handle closing negotiation help modal
+  const handleCloseNegotiationHelp = () => {
+    setNegotiationHelpModal({
+      isOpen: false,
+      billId: '',
+      creditorName: ''
+    });
+  };
+
+  // Currency formatter (temporary - should be imported from types)
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   // Loading state
@@ -332,6 +514,26 @@ export function Dashboard() {
               />
             </div>
 
+            {/* Priority Matrix Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">Your Bills by Priority</h2>
+                <p className="text-sm text-gray-600">
+                  Smart prioritization to help you make the best decisions
+                </p>
+              </div>
+              
+              <BillsProvider autoRefreshInterval={5 * 60 * 1000}>
+                <PriorityMatrix
+                  onBillAction={handleBillAction}
+                  showFilters={true}
+                  showBulkActions={true}
+                  refreshInterval={0} // Handled by provider
+                  className="bg-white rounded-lg border border-gray-200 p-6"
+                />
+              </BillsProvider>
+            </div>
+
             {/* Crisis Mode Toggle */}
             {dashboardData.financialStatus === 'CRISIS' && (
               <div className="bg-crisis-50 border border-crisis-200 rounded-lg p-4">
@@ -373,6 +575,42 @@ export function Dashboard() {
             </div>
           </div>
         </footer>
+
+        {/* Split Payment Modal */}
+        {splitPaymentModal.isOpen && splitPaymentModal.bill && (
+          <SplitPaymentModal
+            bill={splitPaymentModal.bill}
+            onClose={handleCloseSplitPayment}
+            onConfirm={handleConfirmSplitPayment}
+          />
+        )}
+
+        {/* Payment Confirmation Modal */}
+        {paymentConfirmationModal.isOpen && paymentConfirmationModal.splitPlan && (
+          <PaymentConfirmationModal
+            isOpen={paymentConfirmationModal.isOpen}
+            onClose={handleClosePaymentConfirmation}
+            splitPlan={paymentConfirmationModal.splitPlan}
+            billName={paymentConfirmationModal.billName}
+            creditorName={paymentConfirmationModal.creditorName}
+          />
+        )}
+
+        {/* Payment Processing Modal */}
+        <PaymentProcessingModal
+          isOpen={paymentProcessingModal.isOpen}
+          onClose={handleClosePaymentProcessing}
+          billNames={paymentProcessingModal.billNames}
+          amount={paymentProcessingModal.amount}
+        />
+
+        {/* Negotiation Help Modal */}
+        <NegotiationHelpModal
+          isOpen={negotiationHelpModal.isOpen}
+          onClose={handleCloseNegotiationHelp}
+          billId={negotiationHelpModal.billId}
+          creditorName={negotiationHelpModal.creditorName}
+        />
       </div>
     </div>
   );
